@@ -1,0 +1,5 @@
+Log-Datei für wesentliche Schritte
+ID: 2, Pfad: ../Filey/files/text2.txt
+ID: 1, Pfad: ../Filey/files/text1.txt
+Log abgeschlossen.
+Bingbong

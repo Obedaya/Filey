@@ -1,26 +1,65 @@
+
 #include <iostream>
 #include <filesystem>
 #include <unordered_map>
 #include <string>
+#include <fstream>
 
-namespace fs = std::filesystem;
-using FileMap = std::unordered_map<int, std::string>;
+    namespace fs = std::filesystem;
+    using FileMap = std::unordered_map<int, std::string>;
 
-int main() {
-    std::string path = "/Users/vivi/Code/ProgSec_Projekt/files";
-    FileMap fileMap;
+// Funktion zum Erstellen einer Log-Datei und Logging wesentlicher Schritte
+    void createAndLog(const FileMap& fileMap) {
+        std::ofstream logFile("../Filey/log.txt");
 
-    int id = 1;
+        if (logFile.is_open()) {
+            logFile << "Log-Datei für wesentliche Schritte" << std::endl;
 
-    for (const auto &entry : fs::directory_iterator(path)) {
-        // Hier fügst du das Key-Value-Paar (ID, Dateipfad) zur Map hinzu
-        fileMap[id++] = entry.path().string();
+            for (const auto& pair : fileMap) {
+                logFile << "ID: " << pair.first << ", Pfad: " << pair.second << std::endl;
+            }
+
+            logFile << "Log abgeschlossen." << std::endl;
+
+            logFile.close();
+            std::cout << "Log-Datei erstellt: log.txt" << std::endl;
+        } else {
+            std::cerr << "Fehler beim Öffnen der Log-Datei!" << std::endl;
+        }
     }
 
-    // Ausgabe der gespeicherten Key-Value-Paare
-    for (const auto &pair : fileMap) {
-        std::cout << "ID: " << pair.first << ", Pfad: " << pair.second << std::endl;
+// Funktion zum Hinzufügen eines Logs zu einer vorhandenen Log-Datei
+    void addLog(const std::string& logText) {
+        std::ofstream logFile("../Filey/log.txt", std::ios::app);  // std::ios::app öffnet die Datei im Anhänge-Modus
+
+        if (logFile.is_open()) {
+            logFile << logText << std::endl;
+            logFile.close();
+        } else {
+            std::cerr << "Fehler beim Öffnen der Log-Datei!" << std::endl;
+        }
     }
 
-    return 0;
-}
+    int main() {
+        std::string path = "../Filey/files";
+        FileMap fileMap;
+
+        int id = 1;
+
+        for (const auto &entry : fs::directory_iterator(path)) {
+            fileMap[id++] = entry.path().string();
+        }
+
+        // Ausgabe der gespeicherten Key-Value-Paare
+        for (const auto &pair : fileMap) {
+            std::cout << "ID: " << pair.first << ", Pfad: " << pair.second << std::endl;
+        }
+
+        // Funktion aufrufen, um Log-Datei zu erstellen
+        createAndLog(fileMap);
+
+        // Beispiel für die Nutzung der addLog-Funktion
+        addLog("Bingbong");
+
+        return 0;
+    }
