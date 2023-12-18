@@ -4,60 +4,102 @@ Hasher::Hasher() {
     OpenSSL_add_all_algorithms();
 }
 
-std::string Hasher::getHashFile(const char *path) {
-    // Open file
+const unsigned char* Hasher::getHashFile(const char *path) {
+    // Datei öffnen
     FILE *file = fopen(path, "rb");
     if (!file) {
-        std::cerr << "Fehler beim Öffnen der Log-Datei!" << std::endl;
-        return "";
+        std::cerr << "Fehler beim öffnen der Datei!" << std::endl;
+        return nullptr;
     }
 
-    // Initialize new Envelope Message Digest Context to store information for the hashing operation
+    // Initialisiert neuen Envelope Message Digest Context um Informationen zur Hash Operation zu speichern
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
     if (!mdctx) {
-        std::cerr << "Fehler beim erstellen des EVPs" << std::endl;
+        std::cerr << "Fehler beim erstellen des EVPs!" << std::endl;
         fclose(file);
-        return "";
+        return nullptr;
     }
     if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), NULL)) {
         std::cerr << "Fehler beim initialisieren des EVPs" << std::endl;
         fclose(file);
         EVP_MD_CTX_free(mdctx);
-        return "";
+        return nullptr;
     }
 
-    // Splits file into 1024-byte chunks and reads them
+    // Teilt Datei in 1024-Byte große Teile auf
     unsigned char buffer[1024];
     size_t bytes_read;
     while ((bytes_read = fread(buffer, 1, 1024, file)) != 0) {
-        // Updates the hash with the new bytes
+        // Updated den Hash mit neuem Teil
         if (1 != EVP_DigestUpdate(mdctx, buffer, bytes_read)) {
-            std::cerr << "Fehler beim hashen der Datei" << std::endl;
+            std::cerr << "Fehler beim Updaten des Hashes!" << std::endl;
             fclose(file);
             EVP_MD_CTX_free(mdctx);
-            return "";
+            return nullptr;
         }
     }
 
-    // Completes the hash function and returns the final hash
-    unsigned char md_value[EVP_MAX_MD_SIZE];
+    // Beendet die Hash Funktion und gibt den Finalen Hash zurück
+    unsigned char* md_value = new unsigned char[EVP_MAX_MD_SIZE];
     unsigned int md_len;
     if (1 != EVP_DigestFinal_ex(mdctx, md_value, &md_len)) {
-        std::cerr << "Fehler bei der Finalisierung" << std::endl;
+        std::cerr << "Fehler beim Finalisieren des Hashes!" << std::endl;
         fclose(file);
         EVP_MD_CTX_free(mdctx);
-        return "";
+        delete[] md_value;
+        return nullptr;
     }
 
-    // Closes the file
+    // Datei schließen
     fclose(file);
     EVP_MD_CTX_free(mdctx);
 
-    // Convert the hash to a hexadecimal string
-    std::stringstream ss;
-    for (unsigned int i = 0; i < md_len; i++) {
-        ss << std::hex << std::setw(2) << std::setfill('0') << (int)md_value[i];
+    return md_value;
+}
+
+const unsigned char* Hasher::hashTwoHashes(const unsigned char* hash1, const unsigned char* hash2){
+    unsigned char combined[64];
+    std::memcpy(combined, hash1, 32);
+    std::memcpy(combined + 32, hash2, 32);
+
+    // Initialisiert neuen Envelope Message Digest Context um Informationen zur Hash Operation zu speichern
+    EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+    if (!mdctx) {
+        std::cerr << "Fehler beim erstellen des EVPs!" << std::endl;
+        return nullptr;
+    }
+    if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), NULL)) {
+        std::cerr << "Fehler beim initialisieren des EVPs" << std::endl;
+        EVP_MD_CTX_free(mdctx);
+        return nullptr;
     }
 
-    return ss.str();
+    // Hasht die beiden Hashes
+    if (1 != EVP_DigestUpdate(mdctx, combined, 64)) {
+        std::cerr << "Fehler beim Updaten des Hashes!" << std::endl;
+        EVP_MD_CTX_free(mdctx);
+        return nullptr;
+    }
+
+    // Beendet die Hash Funktion und gibt den Finalen Hash zurück
+    unsigned char* md_value = new unsigned char[EVP_MAX_MD_SIZE];
+    unsigned int md_len;
+    if (1 != EVP_DigestFinal_ex(mdctx, md_value, &md_len)) {
+        std::cerr << "Fehler beim Finalisieren des Hashes!" << std::endl;
+        EVP_MD_CTX_free(mdctx);
+        delete[] md_value;
+        return nullptr;
+    }
+
+    EVP_MD_CTX_free(mdctx);
+    return md_value;
 }
+
+std::string Hasher::binaryToHex(const unsigned char* data, size_t length) {
+    std::stringstream hexStream;
+    hexStream << std::hex << std::setfill('0');
+    for (size_t i = 0; i < length; ++i) {
+        hexStream << std::setw(2) << static_cast<int>(data[i]);
+    }
+    return hexStream.str();
+};

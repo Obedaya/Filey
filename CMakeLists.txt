@@ -56,7 +56,8 @@ target_link_libraries(Filey OpenSSL::SSL)
 add_subdirectory(logger)
 add_subdirectory(fileprocessor)
 add_subdirectory(hasher)
+add_subdirectory(controller)
 
 # Verknüpfe die Bibliotheken mit dem Hauptprogramm
-target_link_libraries(Filey Logger FileProcessor Hasher)
+target_link_libraries(Filey Logger FileProcessor Hasher Controller)
 
