@@ -27,6 +27,6 @@ int main() {
     logger.addLog("Bingbong");
 
     // Beispiel für die Nutzung des Hashers
-    hasher.getHashFile("../README.md");
+    std::cout << hasher.getHashFile("../README.md") << std::endl;
     return 0;
 }
