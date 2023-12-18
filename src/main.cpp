@@ -26,7 +26,7 @@ int main() {
     // Beispiel für die Nutzung der addLog-Funktion
     logger.addLog("Bingbong");
 
-    // Beispiel für die Nutzun des Hashers
+    // Beispiel für die Nutzung des Hashers
     hasher.getHashFile("../README.md");
     return 0;
 }
