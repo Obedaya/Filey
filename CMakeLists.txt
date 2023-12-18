@@ -29,9 +29,8 @@ project(Filey VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-#Simoms Hasher
-add_executable(Hasher src/hasher.cpp
-)
+find_package(OpenSSL REQUIRED)
+#target_link_libraries(untitled OpenSSL::SSL)
 
 # Füge die Verzeichnisse mit Header-Dateien und Quelldateien hinzu
 include_directories(include)
@@ -43,6 +42,7 @@ add_executable(Filey src/main.cpp)
 # Füge die Unterprojekte (Bibliotheken) hinzu
 add_subdirectory(logger)
 add_subdirectory(fileprocessor)
+add_subdirectory(hasher)
 
 # Verknüpfe die Bibliotheken mit dem Hauptprogramm
-target_link_libraries(Filey Logger FileProcessor)
+target_link_libraries(Filey Logger FileProcessor Hasher)

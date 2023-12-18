@@ -1,5 +1,6 @@
 #include "../include/logger.h"
 #include "../include/fileprocessor.h"
+#include "../include/hasher.h"
 
 int main() {
     std::string path = "../files";
@@ -7,6 +8,7 @@ int main() {
 
     Logger logger(logFilePath);
     FileProcessor fileProcessor(logger);
+    Hasher hasher;
 
     FileMap fileMap = fileProcessor.processFiles(path);
 
@@ -23,5 +25,8 @@ int main() {
 
     // Beispiel für die Nutzung der addLog-Funktion
     logger.addLog("Bingbong");
+
+    // Beispiel für die Nutzun des Hashers
+    hasher.getHashFile("../README.md");
     return 0;
 }
