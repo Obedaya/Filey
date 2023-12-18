@@ -31,10 +31,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 if(APPLE)
-    # Modify the path as necessary for your system (Intel or Apple Silicon)
-    find_package(OpenSSL REQUIRED HINTS /usr/local/opt/openssl /opt/homebrew/opt/openssl)
+    # Adjust the path as necessary based on your system and the output of 'brew info openssl'
+    set(OpenSSL_DIR /usr/local/opt/homebrew/Cellar/openssl@3/3.2.0_1)
+    find_package(OpenSSL REQUIRED)
+    include_directories(${OPENSSL_INCLUDE_DIR})
+
 else()
     find_package(OpenSSL REQUIRED)
+    include_directories(${OPENSSL_INCLUDE_DIR})
+
 endif()
 
 # Füge die Verzeichnisse mit Header-Dateien und Quelldateien hinzu
