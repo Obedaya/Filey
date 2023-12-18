@@ -84,3 +84,5 @@ cmake-build-release/
 build/
 bin/
 lib/
+
+**/log*.txt

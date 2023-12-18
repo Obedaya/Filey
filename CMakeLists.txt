@@ -30,6 +30,14 @@ project(Filey VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+if(APPLE)
+    # Set the paths for Homebrew's OpenSSL
+    # Adjust the path if necessary depending on the architecture (Intel vs Apple Silicon)
+    set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)
+    set(OPENSSL_CRYPTO_LIBRARY /usr/local/opt/openssl/lib)
+    set(OPENSSL_INCLUDE_DIR /usr/local/opt/openssl/include)
+endif()
+
 # Find the OpenSSL package
 find_package(OpenSSL REQUIRED)
 
