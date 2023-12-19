@@ -57,7 +57,8 @@ add_subdirectory(logger)
 add_subdirectory(fileprocessor)
 add_subdirectory(hasher)
 add_subdirectory(controller)
+add_subdirectory(view)
 
 # Verknüpfe die Bibliotheken mit dem Hauptprogramm
-target_link_libraries(Filey Logger FileProcessor Hasher Controller)
+target_link_libraries(Filey Logger FileProcessor Hasher Controller View)
 
