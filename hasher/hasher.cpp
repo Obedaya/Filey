@@ -4,6 +4,7 @@ Hasher::Hasher() {
     OpenSSL_add_all_algorithms();
 }
 
+// Funktion die eine Datei und ihren Inhalt hasht
 const unsigned char* Hasher::getHashFile(const char *path) {
     // Datei öffnen
     FILE *file = fopen(path, "rb");
@@ -57,6 +58,7 @@ const unsigned char* Hasher::getHashFile(const char *path) {
     return md_value;
 }
 
+// Funktion zum Hashen von 2 Hashes
 const unsigned char* Hasher::hashTwoHashes(const unsigned char* hash1, const unsigned char* hash2){
     unsigned char combined[64];
     std::memcpy(combined, hash1, 32);
@@ -95,6 +97,7 @@ const unsigned char* Hasher::hashTwoHashes(const unsigned char* hash1, const uns
     return md_value;
 }
 
+// Funktion die einen binären Hash zu einem String konvertiert
 std::string Hasher::binaryToHex(const unsigned char* data, size_t length) {
     std::stringstream hexStream;
     hexStream << std::hex << std::setfill('0');

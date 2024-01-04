@@ -16,12 +16,15 @@ const unsigned char* Controller::hashPath(std::string path) {
     // Vektor für die Zwischenspeicherung des Hexadezimalstrings
     std::vector<char> hexBuffer;
 
+    // Iteriert über alle Dateien im Ordner und Hasht diese. Alle Hashes werden dann zu einem Hash gehasht
     for (const auto& pair : fileMap) {
+        // Datei wird gehasht
         const unsigned char* fileHash = hasher.getHashFile(pair.second.c_str());
 
         if (fullHash == nullptr){
             fullHash = fileHash;
         } else {
+            // Hash wird zu jetztigem Hash hinzugefügt
             fullHash = hasher.hashTwoHashes(fileHash, fullHash);
         }
     }
