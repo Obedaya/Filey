@@ -33,19 +33,10 @@ const unsigned char* Controller::hashPath(std::string path) {
     size_t hashSize = 32;
 
     // Konvertiere den binären FullHash in einen hexadezimalen String
-    for (size_t i = 0; i < hashSize; ++i) {
-        hexBuffer.push_back((fullHash[i] & 0xF0) >> 4);
-        hexBuffer.push_back(fullHash[i] & 0x0F);
-    }
+    std::string hexString = hasher.binaryToHex(fullHash, hashSize);
 
-    // Erstelle einen String aus dem Hexadezimal-Buffer
-    std::stringstream stream;
-    stream << std::hex << std::setfill('0');
-    for (const auto& digit : hexBuffer) {
-        stream << std::setw(1) << static_cast<int>(digit);
-    }
-
-    hexList.push_back(stream.str());
+    // Füge den Hexadezimalstring zur Liste hinzu
+    hexList.push_back(hexString);
 
     // Ausgabe der Liste
     for (const auto& hexNumber : hexList) {
