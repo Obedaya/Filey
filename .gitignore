@@ -86,3 +86,4 @@ bin/
 lib/
 
 **/log*.txt
+.DS_Store
