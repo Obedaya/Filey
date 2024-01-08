@@ -13,6 +13,8 @@ class Hasher {
 public:
     explicit Hasher();
     const unsigned char* getHashFile(const char *path);
+    const unsigned char* hashFilePath(const char *path);
+    const unsigned char* hashFileContent(const char *path);
     const unsigned char* hashTwoHashes(const unsigned char* hash1, const unsigned char* hash2);
     std::string binaryToHex(const unsigned char* data, size_t length);
 private:

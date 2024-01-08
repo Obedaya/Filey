@@ -3,6 +3,8 @@
 #include "../include/hasher.h"
 #include "../include/controller.h"
 
+#include <list>
+
 int main() {
     std::string path = "../files";
     std::string logFilePath = "../logs/log.txt";
@@ -31,16 +33,19 @@ int main() {
     // Beispiel für die Nutzung des Hashers
     std::cout << hasher.binaryToHex(hasher.getHashFile("../README.md"), 32) << std::endl;
 
-    const unsigned char* hash1 = hasher.getHashFile("../files/text1.txt");
-    const unsigned char* hash2 = hasher.getHashFile("../files/text1.txt");
+    const unsigned char* hash1 = hasher.hashFileContent("../files/text1.txt");
+    const unsigned char* hash2 = hasher.hashFileContent("../files/text2.txt");
 
-    std::cout << hasher.binaryToHex(hasher.hashTwoHashes(hash1, hash2), 32) << std::endl;
+    std::cout << "Inhalt:" << hasher.binaryToHex(hash1, 32) << std::endl;
+    std::cout << "Inhalt:" << hasher.binaryToHex(hash2, 32) << std::endl;
 
     // Beispiel für die Nutzung des Controllers
 
-    const unsigned char* hashes = controller.hashPath("../files");
+    std::list<const unsigned char*> hashes = controller.hashPath("../files");
 
-    std::cout << hasher.binaryToHex(hashes, 32) << std::endl;
+    for (const auto& hash : hashes) {
+        std::cout << hasher.binaryToHex(hash, 32) << std::endl;
+    }
 
     return 0;
 }

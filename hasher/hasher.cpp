@@ -4,8 +4,54 @@ Hasher::Hasher() {
     OpenSSL_add_all_algorithms();
 }
 
-// Funktion die eine Datei und ihren Inhalt hasht
+// Funktion zum hashen von Inhalt mit Dateinamen
 const unsigned char* Hasher::getHashFile(const char *path) {
+    const unsigned char* hashedFileContent = Hasher::hashFileContent(path);
+    const unsigned char* hashedFilePath = Hasher::hashFilePath(path);
+
+    return Hasher::hashTwoHashes(hashedFilePath, hashedFileContent);
+}
+
+// Funktion zum hashen von Dateinamen
+const unsigned char* Hasher::hashFilePath(const char *path) {
+    std::string pathString = std::string(path);
+
+    // Initialisiert neuen Envelope Message Digest Context um Informationen zur Hash Operation zu speichern
+    EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+    if (!mdctx) {
+        std::cerr << "Fehler beim erstellen des EVPs!" << std::endl;
+        return nullptr;
+    }
+    if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), NULL)) {
+        std::cerr << "Fehler beim initialisieren des EVPs" << std::endl;
+        EVP_MD_CTX_free(mdctx);
+        return nullptr;
+    }
+
+    // Hasht den String
+    if (1 != EVP_DigestUpdate(mdctx, pathString.c_str(), pathString.length())) {
+        std::cerr << "Fehler beim erstellen des Hashes" << std::endl;
+        EVP_MD_CTX_free(mdctx);
+        return nullptr;
+    }
+
+    // Beendet die Hash Funktion und gibt den Finalen Hash zurück
+    unsigned char* md_value = new unsigned char[EVP_MAX_MD_SIZE];
+    unsigned int md_len;
+    if (1 != EVP_DigestFinal_ex(mdctx, md_value, &md_len)) {
+        std::cerr << "Fehler beim Finalisieren des Hashes!" << std::endl;
+        EVP_MD_CTX_free(mdctx);
+        delete[] md_value;
+        return nullptr;
+    }
+
+    EVP_MD_CTX_free(mdctx);
+
+    return md_value;
+}
+
+// Funktion die einen Datei Inhalt hasht
+const unsigned char* Hasher::hashFileContent(const char *path) {
     // Datei öffnen
     FILE *file = fopen(path, "rb");
     if (!file) {
@@ -105,4 +151,5 @@ std::string Hasher::binaryToHex(const unsigned char* data, size_t length) {
         hexStream << std::setw(2) << static_cast<int>(data[i]);
     }
     return hexStream.str();
-};
+}
+

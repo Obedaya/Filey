@@ -58,6 +58,7 @@ add_subdirectory(fileprocessor)
 add_subdirectory(hasher)
 add_subdirectory(controller)
 add_subdirectory(view)
+add_subdirectory(encrypter)
 
 # Verknüpfe die Bibliotheken mit dem Hauptprogramm
 target_link_libraries(Filey Logger FileProcessor Hasher Controller View)
