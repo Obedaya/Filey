@@ -16,7 +16,6 @@ int main() {
 
     FileMap fileMap = fileProcessor.processFiles(path);
 
-
     // Ausgabe der gespeicherten Key-Value-Paare
     for (const auto& pair : fileMap) {
         std::cout << "ID: " << pair.first << ", Pfad: " << pair.second << std::endl;
