@@ -2,6 +2,7 @@
 
 FileProcessor::FileProcessor(Logger& logger) : logger(logger) {}
 
+//TODO: UID mitspeichern (Metadaten)
 FileMap FileProcessor::processFiles(const std::string& path) {
     FileMap fileMap;
     int id = 1;
@@ -14,4 +15,9 @@ FileMap FileProcessor::processFiles(const std::string& path) {
     logger.createAndLog(fileMap);
 
     return fileMap;
+}
+
+// TODO: Hashes speichern mit richtigen Rechten und geignetem Dateinamen
+void FileProcessor::saveHashes(std::list<const unsigned char *> hashes) {
+
 }

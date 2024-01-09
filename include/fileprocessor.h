@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <unordered_map>
 #include <string>
+#include <list>
 #include "logger.h"
 
 namespace fs = std::filesystem;
@@ -14,6 +15,7 @@ public:
 
     [[nodiscard]] FileMap processFiles(const std::string& path);
 
+    void saveHashes(std::list<const unsigned char*> hashes);
 private:
     Logger& logger;
 };

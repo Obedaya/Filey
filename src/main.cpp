@@ -5,6 +5,9 @@
 
 #include <list>
 
+// TODO: Logik implementieren
+// TODO: Programm starten implementieren
+// TODO: Inotify implementiern
 int main() {
     std::string path = "../files";
     std::string logFilePath = "../logs/log.txt";
