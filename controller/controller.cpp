@@ -10,8 +10,8 @@ Controller::Controller(std::string logFilePath) : logger(logFilePath), fileProce
 std::list<const unsigned char*> hashList;
 
 std::list<const unsigned char*> Controller::hashPath(std::string path) {
-    fileMap = fileProcessor.processFiles(path);
-
+    FileProcessingResult result = fileProcessor.processFiles(path);
+    FileMap fileMap = result.fileMap;
     // Vektor für die Zwischenspeicherung des Hexadezimalstrings
     std::vector<char> hexBuffer;
 

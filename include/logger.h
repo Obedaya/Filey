@@ -1,6 +1,9 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#pragma once
+
+#include <list>
 #include <iostream>
 #include <unordered_map>
 #include <string>
@@ -15,6 +18,9 @@ public:
     void createAndLog(const FileMap& fileMap) const;
 
     void addLog(const std::string& logText) const;
+
+    [[nodiscard]] FileMap processFiles(const std::string& path);
+
 
 private:
     const std::string logFilePath;

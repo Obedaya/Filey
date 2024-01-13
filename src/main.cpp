@@ -17,7 +17,9 @@ int main() {
     Hasher hasher;
     Controller controller(logFilePath);
 
-    FileMap fileMap = fileProcessor.processFiles(path);
+    FileProcessingResult result = fileProcessor.processFiles(path);
+    FileMap fileMap = result.fileMap;
+
 
     // Ausgabe der gespeicherten Key-Value-Paare
     for (const auto& pair : fileMap) {
