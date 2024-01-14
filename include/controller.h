@@ -3,20 +3,25 @@
 
 #include <iostream>
 #include <list>
-#include "../include/fileprocessor.h"
-#include "../include/hasher.h"
-#include "../include/logger.h"
+#include "fileprocessor.h"
+#include "hasher.h"
+#include "logger.h"
 
 class Controller {
 public:
     explicit Controller(std::string logFilePath);
-    std::list<const unsigned char*> hashPath(std::string path);
+    void hashPath(std::string path);
+    int initializeHash(std::string &path);
+    bool twoHashesEqual(const unsigned char* firstHash, const unsigned char* secondHash);
 private:
     Logger logger;
     FileProcessor fileProcessor;
     Hasher hasher;
-
     FileMap fileMap;
+
+    std::list<const unsigned char*> hashList;
+
+    const unsigned char* getHashById(int id);
 };
 
 

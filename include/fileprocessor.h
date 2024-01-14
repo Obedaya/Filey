@@ -4,6 +4,8 @@
 #pragma once
 
 #include <filesystem>
+#include <fstream>
+#include <sstream>
 #include <unordered_map>
 #include <string>
 #include <list>
@@ -24,15 +26,16 @@ struct FileProcessingResult {
 class FileProcessor {
 public:
     explicit FileProcessor(Logger& logger);
-
     [[nodiscard]] FileProcessingResult processFiles(const std::string& path);
-
-    void saveHashes(const std::list<const unsigned char*>& hashes);
-
+    const FileMap& getFileMap() const;
+    int saveHash(const int id, const unsigned char* hash);
+    bool pathExists(std::string &path);
+    bool hashExists(int id, const std::string& directoryPath);
+    const unsigned char* getSavedHash(const int id);
 private:
     Logger& logger;
-    std::map<int, std::string> fileMap;
-
+    FileMap fileMap;
+    std::string generateFilename(std::string originalPath);
 };
 
 #endif // FILEPROCESSOR_H

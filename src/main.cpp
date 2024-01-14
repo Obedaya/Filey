@@ -9,6 +9,8 @@
 // TODO: Programm starten implementieren
 // TODO: Inotify implementiern
 int main() {
+    bool programRunning = true;
+
     std::string path = "../files";
     std::string logFilePath = "../logs/log.txt";
 
@@ -16,10 +18,11 @@ int main() {
     FileProcessor fileProcessor(logger);
     Hasher hasher;
     Controller controller(logFilePath);
+/*
+    std::cout << fileProcessor.pathExists(path) << std::endl;
 
     FileProcessingResult result = fileProcessor.processFiles(path);
     FileMap fileMap = result.fileMap;
-
 
     // Ausgabe der gespeicherten Key-Value-Paare
     for (const auto& pair : fileMap) {
@@ -44,12 +47,7 @@ int main() {
     std::cout << "Inhalt:" << hasher.binaryToHex(hash2, 32) << std::endl;
 
     // Beispiel für die Nutzung des Controllers
-
-    std::list<const unsigned char*> hashes = controller.hashPath("../files");
-
-    for (const auto& hash : hashes) {
-        std::cout << hasher.binaryToHex(hash, 32) << std::endl;
-    }
-
+*/
+    controller.initializeHash(path);
     return 0;
 }

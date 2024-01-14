@@ -86,4 +86,5 @@ bin/
 lib/
 
 **/log*.txt
+**/.hash
 .DS_Store

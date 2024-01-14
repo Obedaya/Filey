@@ -5,26 +5,24 @@
 FileProcessor::FileProcessor(Logger& logger) : logger(logger) {}
 
 FileProcessingResult FileProcessor::processFiles(const std::string& path) {
-    FileMap fileMap;
+    // Leert Filemap
+    fileMap.clear();
     UserMap userMap;
-    int id = 1;
+    int id = 0;
 
-    for (const auto& entry : fs::directory_iterator(path)) {
-        // Eindeutige ID generieren
-        std::string uniqueID = std::to_string(id);
-
-        // Dateipfad und eindeutige ID speichern
+    for (const auto& entry : std::filesystem::directory_iterator(path)) {
+        // Generiert einzigartige ID
         fileMap[id] = entry.path().string();
-        // UserID speichern
+        // UserID erhalten und speicehrn (jetztiger User)
         userMap[id] = getuid();
 
         id++;
     }
 
-    // Logger verwenden, um die Log-Datei zu erstellen oder zu erweitern
+    // FileMap loggen
     logger.createAndLog(fileMap);
 
-    // Ergebnisobjekt erstellen und Dateipfade sowie UserIDs speichern
+    // Return Objekt erstellen und zurückgeben
     FileProcessingResult result;
     result.fileMap = fileMap;
     result.userMap = userMap;
@@ -32,21 +30,85 @@ FileProcessingResult FileProcessor::processFiles(const std::string& path) {
     return result;
 }
 
-void FileProcessor::saveHashes(const std::list<const unsigned char*>& hashes) {
-    // Speichern der Hashes mit geeignetem Dateinamen und Rechten
-    // Hash wird z.B. in eine separate Datei mit der Erweiterung ".hash" geschrieben
-    int id = 1;
-    for (const auto& hash : hashes) {
-        std::string filePath = fileMap[id];
-        std::string hashFileName = filePath + ".hash";
+const FileMap& FileProcessor::getFileMap() const {
+    return fileMap;
+}
 
-        std::ofstream hashFile(hashFileName, std::ios::binary);
+int FileProcessor::saveHash(const int id, const unsigned char* hash) {
+    if (fileMap.find(id) == fileMap.end()) {
+        std::cerr << "File ID " << id << " konnte nicht in der FileMap gefunden werden." << std::endl;
+        return -1;
+    }
+
+    std::string originalPath = fileMap[id];
+    std::string flattenedPath;
+
+    // Ersetzt '/' und '\' mit '_' um den Dateinamen schöner zu machen
+    flattenedPath = generateFilename(originalPath);
+
+    std::string hashFileName = "../hashes/" + flattenedPath + ".hash";
+
+    // Sicherstellen, dass Ordner existiert
+    std::filesystem::create_directories(std::filesystem::path(hashFileName).parent_path());
+
+    // Hashes in die Datei schreiben
+    std::ofstream hashFile(hashFileName, std::ios::binary);
+    if (hashFile) {
         hashFile.write(reinterpret_cast<const char*>(hash), Hasher::HASH_SIZE);
         hashFile.close();
 
-        // hier werden die gewünschten Rechte für die Hash-Datei gesetzt (Beispiel: Lese- und Schreibrechte für den Eigentümer)
-        fs::permissions(hashFileName, fs::perms::owner_read | fs::perms::owner_write, fs::perm_options::add);
-
-        id++;
+        // Rechte verwalten (owner kann lesen und schreiben)
+        std::filesystem::permissions(hashFileName,
+                                     std::filesystem::perms::owner_read | std::filesystem::perms::owner_write);
+    } else {
+        std::cerr << "Datei konnte nicht geöffnet werden: " << hashFileName << std::endl;
+        return -1;
     }
+    return 0;
+}
+
+bool FileProcessor::pathExists(std::string &path) {
+    return std::filesystem::exists(path);
+}
+
+bool FileProcessor::hashExists(int id, const std::string& directoryPath) {
+    // Überprüfen, dass Hash auch in fileMap enthalten
+    if (fileMap.find(id) == fileMap.end()) {
+        std::cerr << "File ID " << id << " konnte nicht in der FileMap gefunden werden." << std::endl;
+        return false;
+    }
+    std::string hashFileName = generateFilename(fileMap[id]) + ".hash";
+
+    try {
+        // Checken ob Ordner existiert
+        if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
+            std::cerr << "Ordner existiert nicht! " << directoryPath << std::endl;
+            return false;
+        }
+
+        // Durch Hash Ordner durchgehen
+        for (const auto& entry : fs::directory_iterator(directoryPath)) {
+            // Checken ob aktuelle Datei gesuchter Hash ist
+            if (fs::is_regular_file(entry) && entry.path().filename() == hashFileName) {
+                return true;
+            }
+        }
+    } catch (const fs::filesystem_error& e) {
+        std::cerr << "Filesystem error: " << e.what() << std::endl;
+    }
+
+    return false;
+}
+
+std::string FileProcessor::generateFilename(std::string originalPath) {
+    std::string flattenedPath;
+
+    for (char ch : originalPath) {
+        if (ch == '/' || ch == '\\') {
+            flattenedPath += '_';
+        } else {
+            flattenedPath += ch;
+        }
+    }
+    return flattenedPath;
 }
