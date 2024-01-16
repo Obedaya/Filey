@@ -31,7 +31,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 if(APPLE)
-    # Adjust the path as necessary based on your system and the output of 'brew info openssl'
+    # Passe den Pfad bei Bedarf entsprechend deinem System und der Ausgabe von 'brew info openssl' an
     set(OpenSSL_DIR /usr/local/opt/homebrew/Cellar/openssl@3/3.2.0_1)
     find_package(OpenSSL REQUIRED)
     include_directories(${OPENSSL_INCLUDE_DIR})
