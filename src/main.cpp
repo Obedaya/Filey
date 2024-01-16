@@ -1,23 +1,39 @@
+//==========================================================
+//   ________  _   __
+//  |_   __  |(_) [  |
+//    | |_ \_|__   | | .---.   _   __
+//    |  _|  [  |  | |/ /__\\ [ \ [  ]
+//   _| |_    | |  | || \__.,  \ '/ /
+//  |_____|  [___][___]'.__.'[\_:  /
+//                          \__.'
+//============================================================
+//
+// File integrity checker, to check the integrity of directories and folders
+//
+
+
 #include "../include/logger.h"
 #include "../include/fileprocessor.h"
 #include "../include/hasher.h"
 #include "../include/controller.h"
+#include "../include/view.h"
 
 #include <list>
 
 // TODO: Logik implementieren
 // TODO: Programm starten implementieren
 // TODO: Inotify implementiern
-int main() {
+int main(int argc, char* argv[]) {
     bool programRunning = true;
 
-    std::string path = "../files";
+    std::string path = "../../Filey";
     std::string logFilePath = "../logs/log.txt";
 
     Logger logger(logFilePath);
     FileProcessor fileProcessor(logger);
     Hasher hasher;
     Controller controller(logFilePath);
+   // View view;
 /*
     std::cout << fileProcessor.pathExists(path) << std::endl;
 
@@ -48,6 +64,7 @@ int main() {
 
     // Beispiel für die Nutzung des Controllers
 */
+    //view.getInput(argc, argv);
     controller.initializeHash(path);
     return 0;
 }

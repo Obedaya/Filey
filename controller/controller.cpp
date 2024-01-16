@@ -1,11 +1,6 @@
 #include "../include/controller.h"
-#include <iostream>
-#include <list>
-#include <vector>
-#include <sstream>
-#include <iomanip>
 
-Controller::Controller(std::string logFilePath) : logger(logFilePath), fileProcessor(logger), hasher() {}
+Controller::Controller(std::string logFilePath) : logger(logFilePath), fileProcessor(logger), hasher(), view() {}
 
 void Controller::hashPath(std::string path) {
     // Alle Dateien in dem Directory bekommen
@@ -39,10 +34,13 @@ int Controller::initializeHash(std::string &path) {
 
     for (const auto& pair : currentFileMap) {
         int id = pair.first;
-        if (!fileProcessor.hashExists(id, "../hashes/")) {
+        std::string currentHashPath = pair.second.c_str();
+        const unsigned char* currentHash = getHashById(id);
+        const unsigned char* existingHash = fileProcessor.hashExists(currentHashPath, "../hashes/");
+        if (existingHash == nullptr) {
             // Fall 1: Hash existiert noch nicht:
             // - Hash abspeichern
-            if (fileProcessor.saveHash(id, getHashById(id)) == -1){
+            if (fileProcessor.saveHash(id, currentHash) == -1){
                 // Fehler beim speichern vom Hash
                 std::cerr << "Fehler beim speichern von Hash " << id << "!" << std::endl;
                 return -1;
@@ -51,12 +49,22 @@ int Controller::initializeHash(std::string &path) {
         else {
             // Fall 2: Hash existiert bereits:
             // - Mit existierendem Hash vergleichen
+            // Nicht mehr implementiert (Aber Idee):
             // - Bei gleicher UID abspeichern
             // - Unterschiedliche UID: Alert
-
+            if (twoHashesEqual(existingHash, currentHash)){
+                // Hashes sind gleich keine changes wurden gemacht
+                std::cout << "Hashes sind gleich keine Änderungen" << std::endl;
+                return 0;
+            } else{
+                std::cout << "ALLAAAAARM" << std::endl;
+                return 0;
+            }
         }
     }
 }
+
+
 
 bool Controller::twoHashesEqual(const unsigned char *firstHash, const unsigned char *secondHash) {
     if (firstHash == secondHash){
@@ -76,4 +84,8 @@ const unsigned char* Controller::getHashById(int id) {
     auto it = hashList.begin();
     std::advance(it, id);
     return *it;
+}
+
+int Controller::initializeProgram(int argc, char **argv) {
+
 }

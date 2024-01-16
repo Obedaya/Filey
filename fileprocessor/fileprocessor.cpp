@@ -1,6 +1,7 @@
 #include "../include/fileprocessor.h"
 #include "../include/hasher.h"
 #include <unistd.h>
+#include <sys/stat.h>
 
 FileProcessor::FileProcessor(Logger& logger) : logger(logger) {}
 
@@ -10,11 +11,11 @@ FileProcessingResult FileProcessor::processFiles(const std::string& path) {
     UserMap userMap;
     int id = 0;
 
-    for (const auto& entry : std::filesystem::directory_iterator(path)) {
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
         // Generiert einzigartige ID
         fileMap[id] = entry.path().string();
         // UserID erhalten und speicehrn (jetztiger User)
-        userMap[id] = getuid();
+        userMap[id] = getLastModifiedUid(entry.path().string());
 
         id++;
     }
@@ -71,33 +72,42 @@ bool FileProcessor::pathExists(std::string &path) {
     return std::filesystem::exists(path);
 }
 
-bool FileProcessor::hashExists(int id, const std::string& directoryPath) {
-    // Überprüfen, dass Hash auch in fileMap enthalten
-    if (fileMap.find(id) == fileMap.end()) {
-        std::cerr << "File ID " << id << " konnte nicht in der FileMap gefunden werden." << std::endl;
-        return false;
-    }
-    std::string hashFileName = generateFilename(fileMap[id]) + ".hash";
+const unsigned char* FileProcessor::hashExists(const std::string& path, const std::string& directoryPath) {
+    // Dateinamen erstellen
+    std::string hashFileName = generateFilename(path) + ".hash";
 
     try {
         // Checken ob Ordner existiert
         if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
             std::cerr << "Ordner existiert nicht! " << directoryPath << std::endl;
-            return false;
+            return nullptr;
         }
 
         // Durch Hash Ordner durchgehen
         for (const auto& entry : fs::directory_iterator(directoryPath)) {
             // Checken ob aktuelle Datei gesuchter Hash ist
             if (fs::is_regular_file(entry) && entry.path().filename() == hashFileName) {
-                return true;
+                // Datei öffnen und Hash auslesen
+                std::ifstream hashFile(entry.path(), std::ios::binary);
+                if (hashFile) {
+                    // Speicher für Hash reservieren
+                    unsigned char* hash = new unsigned char[Hasher::HASH_SIZE];
+                    // Hash auslesen
+                    hashFile.read(reinterpret_cast<char*>(hash), Hasher::HASH_SIZE);
+                    hashFile.close();
+
+                    return hash;
+                } else {
+                    std::cerr << "Datei konnte nicht geöffnet werden: " << entry.path() << std::endl;
+                    return nullptr;
+                }
             }
         }
     } catch (const fs::filesystem_error& e) {
         std::cerr << "Filesystem error: " << e.what() << std::endl;
     }
 
-    return false;
+    return nullptr;
 }
 
 std::string FileProcessor::generateFilename(std::string originalPath) {
@@ -111,4 +121,15 @@ std::string FileProcessor::generateFilename(std::string originalPath) {
         }
     }
     return flattenedPath;
+}
+
+// Wird nicht verwendet
+uid_t FileProcessor::getLastModifiedUid(const std::string& filepath) {
+    struct stat fileInfo;
+    if (stat(filepath.c_str(), &fileInfo) == 0) {
+        return fileInfo.st_uid;
+    } else {
+        perror("stat");
+        return static_cast<uid_t>(-1);
+    }
 }

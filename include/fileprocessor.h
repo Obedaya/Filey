@@ -30,8 +30,8 @@ public:
     const FileMap& getFileMap() const;
     int saveHash(const int id, const unsigned char* hash);
     bool pathExists(std::string &path);
-    bool hashExists(int id, const std::string& directoryPath);
-    const unsigned char* getSavedHash(const int id);
+    const unsigned char* hashExists(const std::string& path, const std::string& directoryPath);
+    uid_t getLastModifiedUid(const std::string& filepath);
 private:
     Logger& logger;
     FileMap fileMap;

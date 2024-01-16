@@ -3,9 +3,12 @@
 
 #include <iostream>
 #include <list>
+#include <iostream>
+#include <vector>
 #include "fileprocessor.h"
 #include "hasher.h"
 #include "logger.h"
+#include "view.h"
 
 class Controller {
 public:
@@ -13,11 +16,13 @@ public:
     void hashPath(std::string path);
     int initializeHash(std::string &path);
     bool twoHashesEqual(const unsigned char* firstHash, const unsigned char* secondHash);
+    int initializeProgram(int argc, char* argv[]);
 private:
     Logger logger;
     FileProcessor fileProcessor;
     Hasher hasher;
     FileMap fileMap;
+    View view;
 
     std::list<const unsigned char*> hashList;
 
