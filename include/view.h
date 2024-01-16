@@ -10,7 +10,7 @@
 class View {
 public:
     explicit View();
-    int getInput(int argc, char **argv);
+    std::string getInput(int argc, char **argv);
     std::map<std::string, std::string> extractArguments(int argc, char* argv[]);
 private:
     void printHelp();

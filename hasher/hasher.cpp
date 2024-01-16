@@ -6,15 +6,15 @@ Hasher::Hasher() {
 
 // Funktion zum hashen von Inhalt mit Dateinamen
 const unsigned char* Hasher::getHashFile(const char *path) {
-    const unsigned char* hashedFileContent = Hasher::hashFileContent(path);
-    const unsigned char* hashedFilePath = Hasher::hashFilePath(path);
+    const unsigned char* hashed_file_content = Hasher::hashFileContent(path);
+    const unsigned char* hashed_file_path = Hasher::hashFilePath(path);
 
-    return Hasher::hashTwoHashes(hashedFilePath, hashedFileContent);
+    return Hasher::hashTwoHashes(hashed_file_path, hashed_file_content);
 }
 
 // Funktion zum hashen von Dateinamen
 const unsigned char* Hasher::hashFilePath(const char *path) {
-    std::string pathString = std::string(path);
+    std::string path_string = std::string(path);
 
     // Initialisiert neuen Envelope Message Digest Context um Informationen zur Hash Operation zu speichern
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
@@ -29,7 +29,7 @@ const unsigned char* Hasher::hashFilePath(const char *path) {
     }
 
     // Hasht den String
-    if (1 != EVP_DigestUpdate(mdctx, pathString.c_str(), pathString.length())) {
+    if (1 != EVP_DigestUpdate(mdctx, path_string.c_str(), path_string.length())) {
         std::cerr << "Fehler beim erstellen des Hashes" << std::endl;
         EVP_MD_CTX_free(mdctx);
         return nullptr;
@@ -145,11 +145,11 @@ const unsigned char* Hasher::hashTwoHashes(const unsigned char* hash1, const uns
 
 // Funktion die einen binären Hash zu einem String konvertiert
 std::string Hasher::binaryToHex(const unsigned char* data, size_t length) {
-    std::stringstream hexStream;
-    hexStream << std::hex << std::setfill('0');
+    std::stringstream hex_stream;
+    hex_stream << std::hex << std::setfill('0');
     for (size_t i = 0; i < length; ++i) {
-        hexStream << std::setw(2) << static_cast<int>(data[i]);
+        hex_stream << std::setw(2) << static_cast<int>(data[i]);
     }
-    return hexStream.str();
+    return hex_stream.str();
 }
 

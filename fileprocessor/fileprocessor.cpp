@@ -1,68 +1,54 @@
 #include "../include/fileprocessor.h"
-#include "../include/hasher.h"
-#include <unistd.h>
-#include <sys/stat.h>
 
 FileProcessor::FileProcessor(Logger& logger) : logger(logger) {}
 
-FileProcessingResult FileProcessor::processFiles(const std::string& path) {
+void FileProcessor::processFiles(const std::string& path) {
     // Leert Filemap
-    fileMap.clear();
-    UserMap userMap;
+    file_map.clear();
     int id = 0;
 
     for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
         // Generiert einzigartige ID
-        fileMap[id] = entry.path().string();
-        // UserID erhalten und speicehrn (jetztiger User)
-        userMap[id] = getLastModifiedUid(entry.path().string());
-
+        file_map[id] = entry.path().string();
         id++;
     }
 
     // FileMap loggen
-    logger.createAndLog(fileMap);
-
-    // Return Objekt erstellen und zurückgeben
-    FileProcessingResult result;
-    result.fileMap = fileMap;
-    result.userMap = userMap;
-
-    return result;
+    logger.createAndLog(file_map);
 }
 
 const FileMap& FileProcessor::getFileMap() const {
-    return fileMap;
+    return file_map;
 }
 
 int FileProcessor::saveHash(const int id, const unsigned char* hash) {
-    if (fileMap.find(id) == fileMap.end()) {
+    if (file_map.find(id) == file_map.end()) {
         std::cerr << "File ID " << id << " konnte nicht in der FileMap gefunden werden." << std::endl;
         return -1;
     }
 
-    std::string originalPath = fileMap[id];
-    std::string flattenedPath;
+    std::string original_path = file_map[id];
+    std::string flattened_path;
 
     // Ersetzt '/' und '\' mit '_' um den Dateinamen schöner zu machen
-    flattenedPath = generateFilename(originalPath);
+    flattened_path = generateFilename(original_path);
 
-    std::string hashFileName = "../hashes/" + flattenedPath + ".hash";
+    std::string hash_file_name = "../hashes/" + flattened_path + ".hash";
 
     // Sicherstellen, dass Ordner existiert
-    std::filesystem::create_directories(std::filesystem::path(hashFileName).parent_path());
+    std::filesystem::create_directories(std::filesystem::path(hash_file_name).parent_path());
 
     // Hashes in die Datei schreiben
-    std::ofstream hashFile(hashFileName, std::ios::binary);
-    if (hashFile) {
-        hashFile.write(reinterpret_cast<const char*>(hash), Hasher::HASH_SIZE);
-        hashFile.close();
+    std::ofstream hash_file(hash_file_name, std::ios::binary);
+    if (hash_file) {
+        hash_file.write(reinterpret_cast<const char*>(hash), Hasher::HASH_SIZE);
+        hash_file.close();
 
         // Rechte verwalten (owner kann lesen und schreiben)
-        std::filesystem::permissions(hashFileName,
+        std::filesystem::permissions(hash_file_name,
                                      std::filesystem::perms::owner_read | std::filesystem::perms::owner_write);
     } else {
-        std::cerr << "Datei konnte nicht geöffnet werden: " << hashFileName << std::endl;
+        std::cerr << "Datei konnte nicht geöffnet werden: " << hash_file_name << std::endl;
         return -1;
     }
     return 0;
@@ -72,29 +58,29 @@ bool FileProcessor::pathExists(std::string &path) {
     return std::filesystem::exists(path);
 }
 
-const unsigned char* FileProcessor::hashExists(const std::string& path, const std::string& directoryPath) {
+const unsigned char* FileProcessor::hashExists(const std::string& path, const std::string& directory_path) {
     // Dateinamen erstellen
-    std::string hashFileName = generateFilename(path) + ".hash";
+    std::string hash_file_name = generateFilename(path) + ".hash";
 
     try {
         // Checken ob Ordner existiert
-        if (!fs::exists(directoryPath) || !fs::is_directory(directoryPath)) {
-            std::cerr << "Ordner existiert nicht! " << directoryPath << std::endl;
+        if (!fs::exists(directory_path) || !fs::is_directory(directory_path)) {
+            std::cerr << "Ordner existiert nicht! " << directory_path << std::endl;
             return nullptr;
         }
 
         // Durch Hash Ordner durchgehen
-        for (const auto& entry : fs::directory_iterator(directoryPath)) {
+        for (const auto& entry : fs::directory_iterator(directory_path)) {
             // Checken ob aktuelle Datei gesuchter Hash ist
-            if (fs::is_regular_file(entry) && entry.path().filename() == hashFileName) {
+            if (fs::is_regular_file(entry) && entry.path().filename() == hash_file_name) {
                 // Datei öffnen und Hash auslesen
-                std::ifstream hashFile(entry.path(), std::ios::binary);
-                if (hashFile) {
+                std::ifstream hash_file(entry.path(), std::ios::binary);
+                if (hash_file) {
                     // Speicher für Hash reservieren
                     unsigned char* hash = new unsigned char[Hasher::HASH_SIZE];
                     // Hash auslesen
-                    hashFile.read(reinterpret_cast<char*>(hash), Hasher::HASH_SIZE);
-                    hashFile.close();
+                    hash_file.read(reinterpret_cast<char*>(hash), Hasher::HASH_SIZE);
+                    hash_file.close();
 
                     return hash;
                 } else {
@@ -110,24 +96,24 @@ const unsigned char* FileProcessor::hashExists(const std::string& path, const st
     return nullptr;
 }
 
-std::string FileProcessor::generateFilename(std::string originalPath) {
-    std::string flattenedPath;
+std::string FileProcessor::generateFilename(const std::string& original_path) {
+    std::string flattened_path;
 
-    for (char ch : originalPath) {
+    for (char ch : original_path) {
         if (ch == '/' || ch == '\\') {
-            flattenedPath += '_';
+            flattened_path += '_';
         } else {
-            flattenedPath += ch;
+            flattened_path += ch;
         }
     }
-    return flattenedPath;
+    return flattened_path;
 }
 
 // Wird nicht verwendet
 uid_t FileProcessor::getLastModifiedUid(const std::string& filepath) {
-    struct stat fileInfo;
-    if (stat(filepath.c_str(), &fileInfo) == 0) {
-        return fileInfo.st_uid;
+    struct stat file_info;
+    if (stat(filepath.c_str(), &file_info) == 0) {
+        return file_info.st_uid;
     } else {
         perror("stat");
         return static_cast<uid_t>(-1);

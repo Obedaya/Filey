@@ -26,7 +26,7 @@
 int main(int argc, char* argv[]) {
     bool programRunning = true;
 
-    std::string path = "../../Filey";
+    std::string path = "../files/";
     std::string logFilePath = "../logs/log.txt";
 
     Logger logger(logFilePath);
@@ -38,17 +38,17 @@ int main(int argc, char* argv[]) {
     std::cout << fileProcessor.pathExists(path) << std::endl;
 
     FileProcessingResult result = fileProcessor.processFiles(path);
-    FileMap fileMap = result.fileMap;
+    FileMap file_map = result.file_map;
 
     // Ausgabe der gespeicherten Key-Value-Paare
-    for (const auto& pair : fileMap) {
+    for (const auto& pair : file_map) {
         std::cout << "ID: " << pair.first << ", Pfad: " << pair.second << std::endl;
     }
 
-    Logger Logger(logFilePath);
+    Logger Logger(log_file_path);
 
     // Funktion aufrufen, um Log-Datei zu erstellen
-    logger.createAndLog(fileMap);
+    logger.createAndLog(file_map);
 
     // Beispiel für die Nutzung der addLog-Funktion
     logger.addLog("Bingbong");
@@ -64,7 +64,8 @@ int main(int argc, char* argv[]) {
 
     // Beispiel für die Nutzung des Controllers
 */
-    //view.getInput(argc, argv);
-    controller.initializeHash(path);
+    if (controller.initializeProgram(argc, argv)) {
+        return -1;
+    }
     return 0;
 }

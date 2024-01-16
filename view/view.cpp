@@ -3,8 +3,9 @@
 
 View::View() {}
 
-int View::getInput(int argc, char* argv[]) {
+std::string View::getInput(int argc, char* argv[]) {
     auto args = extractArguments(argc, argv);
+    //std::regex path_regex_template("^(/[^/ ]*)+/?$");
 
     // Hier können alle optionalen commandline Argumente hin
 
@@ -13,16 +14,18 @@ int View::getInput(int argc, char* argv[]) {
         std::string path_value = args["-p"];
         if (path_value == "") {
             printHelp();
-            return -1;
+            return "";
         }
         else{
-            if (std::regex_match (path_value, std::regex("^(/[^/ ]*)+/?$") )) {
-                std::cout << "string literal matched\n" << std::endl;
-            }
-            else {
-                printHelp();
-                return -1;
-            }
+            // Regex überprüfung von Pfad (schwierig)
+//            if (std::regex_match (path_value, path_regex)) {
+//                return path_value;
+//            }
+//            else {
+//                printHelp();
+//                return "";
+//            }
+            return path_value;
         }
     }
 }
@@ -48,5 +51,5 @@ void View::printHelp() {
     std::cout << "Usage: ./filey -p path [options]...\n"
                  "Filey file integrity checker\n"
                  "\t-p path\n"
-                 "\t\t Path to file or directory to check integrity";
+                 "\t\t Path to file or directory to check integrity" << std::endl;
 }

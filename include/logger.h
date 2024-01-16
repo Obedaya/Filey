@@ -13,17 +13,15 @@ using FileMap = std::unordered_map<int, std::string>;
 
 class Logger {
 public:
-    explicit Logger(const std::string& logFilePath);
+    explicit Logger(const std::string& log_file_path);
 
-    void createAndLog(const FileMap& fileMap) const;
+    void createAndLog(const FileMap& file_map) const;
 
-    void addLog(const std::string& logText) const;
-
-    [[nodiscard]] FileMap processFiles(const std::string& path);
+    void addLog(const std::string& log_text) const;
 
 
 private:
-    const std::string logFilePath;
+    const std::string log_file_path;
 };
 
 #endif // LOGGER_H

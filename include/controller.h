@@ -13,18 +13,17 @@
 class Controller {
 public:
     explicit Controller(std::string logFilePath);
-    void hashPath(std::string path);
+    void hashPath();
     int initializeHash(std::string &path);
-    bool twoHashesEqual(const unsigned char* firstHash, const unsigned char* secondHash);
+    bool twoHashesEqual(const unsigned char* first_hash, const unsigned char* second_hash);
     int initializeProgram(int argc, char* argv[]);
 private:
     Logger logger;
     FileProcessor fileProcessor;
     Hasher hasher;
-    FileMap fileMap;
     View view;
 
-    std::list<const unsigned char*> hashList;
+    std::map<int, const unsigned char*> hash_list;
 
     const unsigned char* getHashById(int id);
 };
