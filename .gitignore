@@ -75,3 +75,16 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# CMake build directories
+cmake-build-debug/
+cmake-build-release/
+
+# Build output
+build/
+bin/
+lib/
+
+**/log*.txt
+**/*.hash
+.DS_Store
