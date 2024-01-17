@@ -12,10 +12,10 @@
 
 class Controller {
 public:
-    explicit Controller(std::string logFilePath);
+    explicit Controller(const std::string& logFilePath);
     void hashPath();
-    int initializeHash(std::string &path);
-    bool twoHashesEqual(const unsigned char* first_hash, const unsigned char* second_hash);
+    int initializeHash(bool force_flag);
+    static bool twoHashesEqual(const unsigned char* first_hash, const unsigned char* second_hash);
     int initializeProgram(int argc, char* argv[]);
 private:
     Logger logger;

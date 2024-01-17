@@ -2,15 +2,25 @@
 
 FileProcessor::FileProcessor(Logger& logger) : logger(logger) {}
 
-void FileProcessor::processFiles(const std::string& path) {
+void FileProcessor::processFiles(const std::string& path, bool recursive_flag) {
     // Leert Filemap
     file_map.clear();
     int id = 0;
 
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
-        // Generiert einzigartige ID
-        file_map[id] = entry.path().string();
-        id++;
+    // Ordner rekursiv oder nicht rekursiv durchlaufen
+    if (recursive_flag){
+        for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+            // Generiert einzigartige ID
+            file_map[id] = entry.path().string();
+            id++;
+        }
+    }
+    else {
+        for (const auto &entry: std::filesystem::directory_iterator(path)) {
+            // Generiert einzigartige ID
+            file_map[id] = entry.path().string();
+            id++;
+        }
     }
 
     // FileMap loggen

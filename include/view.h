@@ -5,13 +5,13 @@
 #include <string>
 #include <iostream>
 #include <regex>
-
+#include <tuple>
 
 class View {
 public:
     explicit View();
-    std::string getInput(int argc, char **argv);
-    std::map<std::string, std::string> extractArguments(int argc, char* argv[]);
+    std::tuple<bool, std::string, bool, bool> getInput(int argc, char **argv);
+    static std::map<std::string, std::string> extractArguments(int argc, char* argv[]);
 private:
     void printHelp();
 };

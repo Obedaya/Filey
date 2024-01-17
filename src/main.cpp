@@ -26,15 +26,15 @@
 int main(int argc, char* argv[]) {
     bool programRunning = true;
 
-    std::string path = "../files/";
     std::string logFilePath = "../logs/log.txt";
 
+    // Sollte eigentlich ohne funktionieren, aber wenn nicht initialisiert -> Linker Error
     Logger logger(logFilePath);
     FileProcessor fileProcessor(logger);
     Hasher hasher;
     Controller controller(logFilePath);
-   // View view;
 /*
+    std::string path = "../files/";
     std::cout << fileProcessor.pathExists(path) << std::endl;
 
     FileProcessingResult result = fileProcessor.processFiles(path);

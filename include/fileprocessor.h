@@ -23,7 +23,7 @@ using UserMap = std::map<int, uid_t>;
 class FileProcessor {
 public:
     explicit FileProcessor(Logger& logger);
-    void processFiles(const std::string& path);
+    void processFiles(const std::string& path, bool recursive_flag);
     const FileMap& getFileMap() const;
     int saveHash(const int id, const unsigned char* hash);
     bool pathExists(std::string &path);
