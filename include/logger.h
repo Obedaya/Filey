@@ -8,17 +8,21 @@
 #include <unordered_map>
 #include <string>
 #include <fstream>
+#include <ctime>
 
 using FileMap = std::unordered_map<int, std::string>;
 
 class Logger {
 public:
-    explicit Logger(const std::string& log_file_path);
+    explicit Logger(std::string  log_file_path);
 
-    void createAndLog(const FileMap& file_map) const;
+    void addFileMapLog(const FileMap& file_map) const;
 
     void addLog(const std::string& log_text) const;
 
+    [[nodiscard]] std::string getCurrentTime() const;
+
+    void printAndLog(const std::string& log_text, bool error);
 
 private:
     const std::string log_file_path;

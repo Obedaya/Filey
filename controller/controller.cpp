@@ -1,6 +1,9 @@
 #include "../include/controller.h"
+#include "../logger/logger.cpp"
+#include "../hasher/hasher.cpp"
+#include "../fileprocessor/fileprocessor.cpp"
 
-Controller::Controller(const std::string& logFilePath) : logger(logFilePath), fileProcessor(logger), hasher(), view() {}
+Controller::Controller(const std::string& logFilePath) : logger(logFilePath), fileProcessor(logger), hasher(logger), view() {}
 
 
 void Controller::hashPath() {
@@ -38,11 +41,11 @@ int Controller::initializeHash(bool force_flag) {
             // Fall 1: Hash existiert noch nicht:
             // - Hash abspeichern
             if (fileProcessor.saveHash(id, current_hash) == -1){
-                // Fehler beim speichern vom Hash
-                std::cerr << "Fehler beim speichern von Hash " << id << "!" << std::endl;
+                // Fehler beim Speichern vom Hash
+                logger.printAndLog("Fehler beim speichern von Hash: " + std::to_string(id) + "!", true);
                 return -1;
             }
-            std::cout << "Neuer Hash von Datei: " << current_hash_path << " und ID: " << id << " wurde erstellt!" << std::endl;
+            logger.printAndLog("Neuer Hash von Datei: " + current_hash_path + " und ID: " + std::to_string(id) + " wurde erstellt!", false);
         }
         else {
             // Fall 2: Hash existiert bereits:
@@ -50,19 +53,19 @@ int Controller::initializeHash(bool force_flag) {
             // - Wenn force_flag gesetzt ist, hash überschreiben
 
             if (twoHashesEqual(existing_hash, current_hash)){
-                // Hashes sind gleich keine changes wurden gemacht
-                std::cout << "Datei: " << current_hash_path << " mit ID: " << id << " hat sich nicht verändert!" << std::endl;
+                // Hashes sind gleich, keine changes wurden gemacht
+                logger.printAndLog("Datei: " + current_hash_path + " mit ID: " + std::to_string(id) + " hat sich nicht verändert!", false);
             } else{
-                std::cout << "ALLAAAAARM bei: " << current_hash_path << std::endl;
+                logger.printAndLog("Hash hat sich verändert: " + current_hash_path, true);
 
-                // Hash überschreiben wenn force_flag gesetzt
+                // Hash überschreiben, wenn force_flag gesetzt
                 if (force_flag){
                     if (fileProcessor.saveHash(id, current_hash) == -1){
-                        // Fehler beim speichern vom Hash
-                        std::cerr << "Fehler beim speichern von Hash " << id << "!" << std::endl;
+                        // Fehler beim Speichern vom Hash
+                        logger.printAndLog("Fehler beim speichern von Hash " + std::to_string(id) + "!", true);
                         return -1;
                     }
-                    std::cout << "Neuer Hash von Datei: " << current_hash_path << " und ID: " << id << " wurde gespeichert!" << std::endl;
+                    logger.printAndLog("Neuer Hash von Datei: " + current_hash_path + " und ID: " + std::to_string(id) + " wurde gespeichert!", false);
                 }
             }
         }
@@ -83,7 +86,7 @@ bool Controller::twoHashesEqual(const unsigned char *first_hash, const unsigned 
 
 const unsigned char* Controller::getHashById(int id) {
     if (id >= hash_list.size()) {
-        std::cerr << "ID " << id << " ist nicht in der Liste" << std::endl;
+        logger.printAndLog("ID: " + std::to_string(id) + " ist nicht in der Liste", true);
         return nullptr;
     }
     return hash_list[id];
@@ -98,12 +101,12 @@ int Controller::initializeProgram(int argc, char **argv) {
     }
     // Checken ob Datei Pfad überhaupt existiert
     if (!fileProcessor.pathExists(user_path)){
-        std::cerr << "Ordner oder Datei existiert nicht!" << std::endl;
+        logger.printAndLog("Ordner oder Datei existiert nicht!", true);
         return -1;
     }
     fileProcessor.processFiles(user_path, recursive_flag);
     if (initializeHash(force_flag) == -1){
-        std::cerr << "Fehler beim hashen der Dateien" << std::endl;
+        logger.printAndLog("Fehler beim hashen der Dateien!", true);
         return -1;
     }
     return 0;

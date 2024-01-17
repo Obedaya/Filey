@@ -1,6 +1,6 @@
 #include "../include/hasher.h"
 
-Hasher::Hasher() {
+Hasher::Hasher(Logger& logger) : logger(logger){
     OpenSSL_add_all_algorithms();
 }
 
@@ -19,27 +19,27 @@ const unsigned char* Hasher::hashFilePath(const char *path) {
     // Initialisiert neuen Envelope Message Digest Context um Informationen zur Hash Operation zu speichern
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
     if (!mdctx) {
-        std::cerr << "Fehler beim erstellen des EVPs!" << std::endl;
+        logger.printAndLog("Fehler beim erstellen des EVPs!", true);
         return nullptr;
     }
-    if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), NULL)) {
-        std::cerr << "Fehler beim initialisieren des EVPs" << std::endl;
+    if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), nullptr)) {
+        logger.printAndLog("Fehler beim initialisieren des EVPs", true);
         EVP_MD_CTX_free(mdctx);
         return nullptr;
     }
 
     // Hasht den String
     if (1 != EVP_DigestUpdate(mdctx, path_string.c_str(), path_string.length())) {
-        std::cerr << "Fehler beim erstellen des Hashes" << std::endl;
+        logger.printAndLog("Fehler beim erstellen des Hashes" , true);
         EVP_MD_CTX_free(mdctx);
         return nullptr;
     }
 
     // Beendet die Hash Funktion und gibt den Finalen Hash zurück
-    unsigned char* md_value = new unsigned char[EVP_MAX_MD_SIZE];
+    auto* md_value = new unsigned char[EVP_MAX_MD_SIZE];
     unsigned int md_len;
     if (1 != EVP_DigestFinal_ex(mdctx, md_value, &md_len)) {
-        std::cerr << "Fehler beim Finalisieren des Hashes!" << std::endl;
+        logger.printAndLog("Fehler beim Finalisieren des Hashes!" , true);
         EVP_MD_CTX_free(mdctx);
         delete[] md_value;
         return nullptr;
@@ -55,19 +55,19 @@ const unsigned char* Hasher::hashFileContent(const char *path) {
     // Datei öffnen
     FILE *file = fopen(path, "rb");
     if (!file) {
-        std::cerr << "Fehler beim öffnen der Datei!" << std::endl;
+        logger.printAndLog("Fehler beim öffnen der Datei!" , true);
         return nullptr;
     }
 
     // Initialisiert neuen Envelope Message Digest Context um Informationen zur Hash Operation zu speichern
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
     if (!mdctx) {
-        std::cerr << "Fehler beim erstellen des EVPs!" << std::endl;
+        logger.printAndLog("Fehler beim erstellen des EVPs!", true);
         fclose(file);
         return nullptr;
     }
-    if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), NULL)) {
-        std::cerr << "Fehler beim initialisieren des EVPs" << std::endl;
+    if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), nullptr)) {
+        logger.printAndLog( "Fehler beim initialisieren des EVPs", true);
         fclose(file);
         EVP_MD_CTX_free(mdctx);
         return nullptr;
@@ -79,7 +79,7 @@ const unsigned char* Hasher::hashFileContent(const char *path) {
     while ((bytes_read = fread(buffer, 1, 1024, file)) != 0) {
         // Updated den Hash mit neuem Teil
         if (1 != EVP_DigestUpdate(mdctx, buffer, bytes_read)) {
-            std::cerr << "Fehler beim Updaten des Hashes!" << std::endl;
+            logger.printAndLog("Fehler beim Updaten des Hashes!", true);
             fclose(file);
             EVP_MD_CTX_free(mdctx);
             return nullptr;
@@ -87,10 +87,10 @@ const unsigned char* Hasher::hashFileContent(const char *path) {
     }
 
     // Beendet die Hash Funktion und gibt den Finalen Hash zurück
-    unsigned char* md_value = new unsigned char[EVP_MAX_MD_SIZE];
+    auto* md_value = new unsigned char[EVP_MAX_MD_SIZE];
     unsigned int md_len;
     if (1 != EVP_DigestFinal_ex(mdctx, md_value, &md_len)) {
-        std::cerr << "Fehler beim Finalisieren des Hashes!" << std::endl;
+        logger.printAndLog("Fehler beim Finalisieren des Hashes!" , true);
         fclose(file);
         EVP_MD_CTX_free(mdctx);
         delete[] md_value;
@@ -113,27 +113,27 @@ const unsigned char* Hasher::hashTwoHashes(const unsigned char* hash1, const uns
     // Initialisiert neuen Envelope Message Digest Context um Informationen zur Hash Operation zu speichern
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
     if (!mdctx) {
-        std::cerr << "Fehler beim erstellen des EVPs!" << std::endl;
+        logger.printAndLog("Fehler beim erstellen des EVPs!", true);
         return nullptr;
     }
-    if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), NULL)) {
-        std::cerr << "Fehler beim initialisieren des EVPs" << std::endl;
+    if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), nullptr)) {
+        logger.printAndLog("Fehler beim initialisieren des EVPs", true);
         EVP_MD_CTX_free(mdctx);
         return nullptr;
     }
 
     // Hasht die beiden Hashes
     if (1 != EVP_DigestUpdate(mdctx, combined, 64)) {
-        std::cerr << "Fehler beim Updaten des Hashes!" << std::endl;
+        logger.printAndLog("Fehler beim Updaten des Hashes!", true);
         EVP_MD_CTX_free(mdctx);
         return nullptr;
     }
 
     // Beendet die Hash Funktion und gibt den Finalen Hash zurück
-    unsigned char* md_value = new unsigned char[EVP_MAX_MD_SIZE];
+    auto* md_value = new unsigned char[EVP_MAX_MD_SIZE];
     unsigned int md_len;
     if (1 != EVP_DigestFinal_ex(mdctx, md_value, &md_len)) {
-        std::cerr << "Fehler beim Finalisieren des Hashes!" << std::endl;
+        logger.printAndLog("Fehler beim Finalisieren des Hashes!" , true);
         EVP_MD_CTX_free(mdctx);
         delete[] md_value;
         return nullptr;

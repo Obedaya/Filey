@@ -64,7 +64,7 @@ std::map<std::string, std::string> View::extractArguments(int argc, char* argv[]
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg[0] == '-') {
-            // Überprüfen ob nächstes Argument ein Wert ist
+            // Überprüfen, ob nächstes Argument ein Wert ist
             if (i + 1 < argc && argv[i + 1][0] != '-') {
                 args[arg] = argv[++i];
             } else {

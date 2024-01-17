@@ -13,54 +13,15 @@
 
 
 #include "../include/logger.h"
-#include "../include/fileprocessor.h"
-#include "../include/hasher.h"
 #include "../include/controller.h"
-#include "../include/view.h"
 
 // TODO: Logger implementieren und richtig einsetzen
-// TODO: Inotify implementiern
+// TODO: Inotify implementieren
 int main(int argc, char* argv[]) {
     bool programRunning = true;
 
     std::string logFilePath = "../logs/log.txt";
-
-    // Sollte eigentlich ohne funktionieren, aber wenn nicht initialisiert -> Linker Error
-    Logger logger(logFilePath);
-    FileProcessor fileProcessor(logger);
-    Hasher hasher;
     Controller controller(logFilePath);
-/*
-    std::string path = "../files/";
-    std::cout << fileProcessor.pathExists(path) << std::endl;
-
-    FileProcessingResult result = fileProcessor.processFiles(path);
-    FileMap file_map = result.file_map;
-
-    // Ausgabe der gespeicherten Key-Value-Paare
-    for (const auto& pair : file_map) {
-        std::cout << "ID: " << pair.first << ", Pfad: " << pair.second << std::endl;
-    }
-
-    Logger Logger(log_file_path);
-
-    // Funktion aufrufen, um Log-Datei zu erstellen
-    logger.createAndLog(file_map);
-
-    // Beispiel für die Nutzung der addLog-Funktion
-    logger.addLog("Bingbong");
-
-    // Beispiel für die Nutzung des Hashers
-    std::cout << hasher.binaryToHex(hasher.getHashFile("../README.md"), 32) << std::endl;
-
-    const unsigned char* hash1 = hasher.hashFileContent("../files/text1.txt");
-    const unsigned char* hash2 = hasher.hashFileContent("../files/text2.txt");
-
-    std::cout << "Inhalt:" << hasher.binaryToHex(hash1, 32) << std::endl;
-    std::cout << "Inhalt:" << hasher.binaryToHex(hash2, 32) << std::endl;
-
-    // Beispiel für die Nutzung des Controllers
-*/
     if (controller.initializeProgram(argc, argv)) {
         return -1;
     }

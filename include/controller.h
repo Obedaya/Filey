@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "view.h"
 
+
 class Controller {
 public:
     explicit Controller(const std::string& logFilePath);
