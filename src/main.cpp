@@ -18,8 +18,6 @@
 #include "../include/controller.h"
 #include "../include/view.h"
 
-#include <list>
-
 // TODO: Logger implementieren und richtig einsetzen
 // TODO: Inotify implementiern
 int main(int argc, char* argv[]) {
