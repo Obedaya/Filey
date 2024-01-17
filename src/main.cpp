@@ -8,7 +8,7 @@
 //                          \__.'
 //============================================================
 //
-// File integrity checker, to check the integrity of directories and folders
+// File integrity checker, to check the integrity of directories and files
 //
 
 
@@ -20,8 +20,7 @@
 
 #include <list>
 
-// TODO: Logik implementieren
-// TODO: Programm starten implementieren
+// TODO: Logger implementieren und richtig einsetzen
 // TODO: Inotify implementiern
 int main(int argc, char* argv[]) {
     bool programRunning = true;

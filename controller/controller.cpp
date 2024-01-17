@@ -2,6 +2,7 @@
 
 Controller::Controller(const std::string& logFilePath) : logger(logFilePath), fileProcessor(logger), hasher(), view() {}
 
+
 void Controller::hashPath() {
     // Alle Dateien in dem Directory bekommen
     FileMap current_file_map = fileProcessor.getFileMap();
