@@ -3,7 +3,7 @@
 #include "../hasher/hasher.cpp"
 #include "../fileprocessor/fileprocessor.cpp"
 
-Controller::Controller(const std::string& logFilePath) : logger(logFilePath), fileProcessor(logger), hasher(logger), view() {}
+Controller::Controller(const std::string& logFilePath) : logger(logFilePath), fileProcessor(logger), hasher(logger) {}
 
 
 void Controller::hashPath() {

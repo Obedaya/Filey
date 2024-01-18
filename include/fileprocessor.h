@@ -26,8 +26,7 @@ public:
     int saveHash(int id, const unsigned char* hash);
     static bool pathExists(std::string &path);
     const unsigned char* hashExists(const std::string& path, const std::string& directory_path);
-    uid_t getLastModifiedUid(const std::string& filepath);
-    std::string sanitizePath(const std::string& path);
+    static std::string sanitizePath(const std::string& path);
 private:
     Logger& logger;
     FileMap file_map;

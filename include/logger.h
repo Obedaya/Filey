@@ -20,9 +20,9 @@ public:
 
     void addLog(const std::string& log_text) const;
 
-    [[nodiscard]] std::string getCurrentTime() const;
+    [[nodiscard]] static std::string getCurrentTime() ;
 
-    void printAndLog(const std::string& log_text, bool error);
+    void printAndLog(const std::string& log_text, bool error) const;
 
 private:
     const std::string log_file_path;

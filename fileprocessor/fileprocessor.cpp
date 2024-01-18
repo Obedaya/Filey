@@ -121,17 +121,6 @@ std::string FileProcessor::generateFilename(const std::string& original_path) {
     return flattened_path;
 }
 
-// Wird nicht verwendet
-uid_t FileProcessor::getLastModifiedUid(const std::string& filepath) {
-    struct stat file_info{};
-    if (stat(filepath.c_str(), &file_info) == 0) {
-        return file_info.st_uid;
-    } else {
-        perror("stat");
-        return static_cast<uid_t>(-1);
-    }
-}
-
 std::string FileProcessor::sanitizePath(const std::string &path) {
     fs::path sanitizedPath = fs::absolute(path);
     return sanitizedPath.string();

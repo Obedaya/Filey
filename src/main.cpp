@@ -12,13 +12,9 @@
 //
 
 
-#include "../include/logger.h"
 #include "../include/controller.h"
 
-// TODO: Logger implementieren und richtig einsetzen
-// TODO: Inotify implementieren
 int main(int argc, char* argv[]) {
-    bool programRunning = true;
 
     std::string logFilePath = "../logs/log.txt";
     Controller controller(logFilePath);

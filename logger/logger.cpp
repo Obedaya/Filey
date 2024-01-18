@@ -31,17 +31,17 @@ void Logger::addLog(const std::string& log_text) const {
     }
 }
 
-std::string Logger::getCurrentTime() const{
-    time_t now = time(0);
+std::string Logger::getCurrentTime() {
+    std::time_t t = std::time(nullptr);
+    std::tm tm = *std::localtime(&t);
 
-    std::string dt = ctime(&now);
+    char buffer[30];
+    strftime(buffer, sizeof(buffer), "[%Y-%m-%dT%H:%M:%S]", &tm);
 
-    dt.erase(dt.end() - 2, dt.end());
-
-    return "[" + dt + "] ";
+    return std::string(buffer);
 }
 
-void Logger::printAndLog(const std::string &log_text, bool error) {
+void Logger::printAndLog(const std::string &log_text, bool error) const {
     if (error) {
         std::cerr << log_text << std::endl;
     } else {
