@@ -76,7 +76,7 @@ int Controller::initializeHash(bool force_flag) {
 
 
 bool Controller::twoHashesEqual(const unsigned char *first_hash, const unsigned char *second_hash) {
-    if (std::memcmp(first_hash, second_hash, 32) == 0){
+    if (std::memcmp(first_hash, second_hash, Hasher::HASH_SIZE) == 0){
         return true;
     }
     else {
@@ -94,11 +94,20 @@ const unsigned char* Controller::getHashById(int id) {
 
 int Controller::initializeProgram(int argc, char **argv) {
     // Input validieren und aus arguments lesen
-    auto [help_flag, user_path, recursive_flag, force_flag] = view.getInput(argc, argv);
+    auto [help_flag, user_path, recursive_flag, force_flag] = View::getInput(argc, argv);
     // Beende das Programm, wenn Command falsch verwendet wurde oder der Pfad falsch oder nicht gegeben ist
     if (help_flag || user_path.empty()){
         return -1;
     }
+
+    try {
+        // Pfad von relativen zu absoluten Pfad ändern
+        user_path = fileProcessor.sanitizePath(user_path);
+    } catch (const fs::filesystem_error& e) {
+        logger.printAndLog("Filesystem error: " + std::string(e.what()), true);
+        return -1;
+    }
+
     // Checken ob Datei Pfad überhaupt existiert
     if (!fileProcessor.pathExists(user_path)){
         logger.printAndLog("Ordner oder Datei existiert nicht!", true);
@@ -106,7 +115,7 @@ int Controller::initializeProgram(int argc, char **argv) {
     }
     fileProcessor.processFiles(user_path, recursive_flag);
     if (initializeHash(force_flag) == -1){
-        logger.printAndLog("Fehler beim hashen der Dateien!", true);
+        logger.printAndLog("Fehler beim Hashen der Dateien!", true);
         return -1;
     }
     return 0;

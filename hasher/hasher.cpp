@@ -106,9 +106,9 @@ const unsigned char* Hasher::hashFileContent(const char *path) {
 
 // Funktion zum Hashen von 2 Hashes
 const unsigned char* Hasher::hashTwoHashes(const unsigned char* hash1, const unsigned char* hash2){
-    unsigned char combined[64];
-    std::memcpy(combined, hash1, 32);
-    std::memcpy(combined + 32, hash2, 32);
+    unsigned char combined[HASH_SIZE * 2];
+    std::memcpy(combined, hash1, HASH_SIZE);
+    std::memcpy(combined + HASH_SIZE, hash2, HASH_SIZE);
 
     // Initialisiert neuen Envelope Message Digest Context um Informationen zur Hash Operation zu speichern
     EVP_MD_CTX *mdctx = EVP_MD_CTX_new();

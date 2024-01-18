@@ -58,7 +58,7 @@ std::tuple<bool, std::string, bool, bool> View::getInput(int argc, char* argv[])
     return std::make_tuple(help_flag, path_value, recursive_flag, force_flag);
 }
 
-// Methode zum speichern der Commandline Argumente in einer Map
+// Methode zum Speichern der Commandline Argumente in einer Map
 std::map<std::string, std::string> View::extractArguments(int argc, char* argv[]) {
     std::map<std::string, std::string> args;
     for (int i = 1; i < argc; ++i) {

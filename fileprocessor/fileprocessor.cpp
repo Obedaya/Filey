@@ -131,3 +131,8 @@ uid_t FileProcessor::getLastModifiedUid(const std::string& filepath) {
         return static_cast<uid_t>(-1);
     }
 }
+
+std::string FileProcessor::sanitizePath(const std::string &path) {
+    fs::path sanitizedPath = fs::absolute(path);
+    return sanitizedPath.string();
+}
