@@ -20,6 +20,17 @@ Force overwriting of the old saved hashes
 -h
 Display this page
 ```
+## Prerequisites
+
+Install CMake (3.26 or higher):
+```bash
+sudo apt install cmake
+```
+
+Install OpenSSL (3 or higher):
+```bash
+sudo apt install openssl
+```
 
 ## Install
 
@@ -29,6 +40,9 @@ git clone https://mygit.th-deg.de/bubungus/Filey.git
 
 cd Filey
 ```
+
+You might need to link your OpenSSL installation in the CMake file
+
 
 Create a directory where you want to save the executable:
 ```bash
