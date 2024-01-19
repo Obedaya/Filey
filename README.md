@@ -24,33 +24,33 @@ Display this page
 ## Install
 
 Clone the repository and go into the folder:
-```
+```bash
 git clone https://mygit.th-deg.de/bubungus/Filey.git
 
 cd Filey
 ```
 
 Create a directory where you want to save the executable:
-```
+```bash
 mkdir build
 
 cd build
 ```
 
 To install the integrity checker, you have to build the Cmake:
-```
+```bash
 cmake ..
 ```
 
 And then build it
-```
+```bash
 make
 ```
 
 ## Usage
 
 Now you can use the integrity checker:
-```
+```bash
 ./Filey -p path -o output_path [options...]
 ```
 
