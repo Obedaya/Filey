@@ -25,7 +25,7 @@ void Controller::hashPath() {
     }
 }
 
-int Controller::initializeHash(bool force_flag) {
+int Controller::initializeHash(bool force_flag, const std::string& output_path) {
     // Alle Dateien im directory und subdirectories hashen
     hashPath();
 
@@ -36,11 +36,11 @@ int Controller::initializeHash(bool force_flag) {
         int id = pair.first;
         std::string current_hash_path = pair.second;
         const unsigned char* current_hash = getHashById(id);
-        const unsigned char* existing_hash = fileProcessor.hashExists(current_hash_path, "../hashes/");
+        const unsigned char* existing_hash = fileProcessor.hashExists(current_hash_path, output_path);
         if (existing_hash == nullptr) {
             // Fall 1: Hash existiert noch nicht:
             // - Hash abspeichern
-            if (fileProcessor.saveHash(id, current_hash) == -1){
+            if (fileProcessor.saveHash(id, current_hash, output_path) == -1){
                 // Fehler beim Speichern vom Hash
                 logger.printAndLog("Fehler beim speichern von Hash: " + std::to_string(id) + "!", true);
                 return -1;
@@ -60,7 +60,7 @@ int Controller::initializeHash(bool force_flag) {
 
                 // Hash überschreiben, wenn force_flag gesetzt
                 if (force_flag){
-                    if (fileProcessor.saveHash(id, current_hash) == -1){
+                    if (fileProcessor.saveHash(id, current_hash, output_path) == -1){
                         // Fehler beim Speichern vom Hash
                         logger.printAndLog("Fehler beim speichern von Hash " + std::to_string(id) + "!", true);
                         return -1;
@@ -94,9 +94,9 @@ const unsigned char* Controller::getHashById(int id) {
 
 int Controller::initializeProgram(int argc, char **argv) {
     // Input validieren und aus arguments lesen
-    auto [help_flag, user_path, recursive_flag, force_flag] = View::getInput(argc, argv);
+    auto [help_flag, user_path, output_path, recursive_flag, force_flag] = View::getInput(argc, argv);
     // Beende das Programm, wenn Command falsch verwendet wurde oder der Pfad falsch oder nicht gegeben ist
-    if (help_flag || user_path.empty()){
+    if (help_flag || user_path.empty() || output_path.empty()){
         return -1;
     }
 
@@ -108,13 +108,25 @@ int Controller::initializeProgram(int argc, char **argv) {
         return -1;
     }
 
+    try {
+        // Pfad von relativen zu absoluten Pfad ändern
+        output_path = fileProcessor.sanitizePath(output_path);
+    } catch (const fs::filesystem_error& e) {
+        logger.printAndLog("Filesystem error: " + std::string(e.what()), true);
+        return -1;
+    }
+
     // Checken ob Datei Pfad überhaupt existiert
     if (!fileProcessor.pathExists(user_path)){
-        logger.printAndLog("Ordner oder Datei existiert nicht!", true);
+        logger.printAndLog("Input Ordner oder Datei existiert nicht!", true);
+        return -1;
+    }
+    if (!fileProcessor.pathExists(output_path)){
+        logger.printAndLog("Output Ordner oder Datei existiert nicht!", true);
         return -1;
     }
     fileProcessor.processFiles(user_path, recursive_flag);
-    if (initializeHash(force_flag) == -1){
+    if (initializeHash(force_flag, output_path) == -1){
         logger.printAndLog("Fehler beim Hashen der Dateien!", true);
         return -1;
     }

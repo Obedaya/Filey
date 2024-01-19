@@ -23,7 +23,7 @@ public:
     explicit FileProcessor(Logger& logger);
     void processFiles(const std::string& path, bool recursive_flag);
     const FileMap& getFileMap() const;
-    int saveHash(int id, const unsigned char* hash);
+    int saveHash(int id, const unsigned char* hash, const std::string& output_path);
     static bool pathExists(std::string &path);
     const unsigned char* hashExists(const std::string& path, const std::string& directory_path);
     static std::string sanitizePath(const std::string& path);

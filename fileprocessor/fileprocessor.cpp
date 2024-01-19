@@ -31,7 +31,7 @@ const FileMap& FileProcessor::getFileMap() const {
     return file_map;
 }
 
-int FileProcessor::saveHash(const int id, const unsigned char* hash) {
+int FileProcessor::saveHash(const int id, const unsigned char* hash, const std::string& output_path) {
     std::string error_message;
     if (file_map.find(id) == file_map.end()) {
 
@@ -45,7 +45,7 @@ int FileProcessor::saveHash(const int id, const unsigned char* hash) {
     // Ersetzt '/' und '\' mit '_' um den Dateinamen schöner zu machen
     flattened_path = generateFilename(original_path);
 
-    std::string hash_file_name = "../hashes/" + flattened_path + ".hash";
+    std::string hash_file_name = output_path + flattened_path + ".hash";
 
     // Sicherstellen, dass Ordner existiert
     std::filesystem::create_directories(std::filesystem::path(hash_file_name).parent_path());

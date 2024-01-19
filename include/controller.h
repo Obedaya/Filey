@@ -15,7 +15,7 @@ class Controller {
 public:
     explicit Controller(const std::string& logFilePath);
     void hashPath();
-    int initializeHash(bool force_flag);
+    int initializeHash(bool force_flag, const std::string& output_path);
     static bool twoHashesEqual(const unsigned char* first_hash, const unsigned char* second_hash);
     int initializeProgram(int argc, char* argv[]);
 private:

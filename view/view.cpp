@@ -3,13 +3,14 @@
 View::View() = default;
 
 // Nimmt die Commandline Argumente verarbeitet und sanatized diese und gibt sie als Liste zurück
-std::tuple<bool, std::string, bool, bool> View::getInput(int argc, char* argv[]) {
+std::tuple<bool, std::string, std::string, bool, bool> View::getInput(int argc, char* argv[]) {
     auto args = extractArguments(argc, argv);
     std::regex path_regex_template("^(\\.\\./|\\.\\/|/)?([^\\0]+)$");
 
-    // Argumente die der User übergibt: {help, path, recursive}
+    // Argumente die der User übergibt: {help, path, output_path recursive}
     bool help_flag = true;
     std::string path_value;
+    std::string output_value;
     bool recursive_flag = false;
     bool force_flag = false;
 
@@ -18,7 +19,7 @@ std::tuple<bool, std::string, bool, bool> View::getInput(int argc, char* argv[])
     // Help Seite darstellen
     if (args.find("-h") != args.end()) {
         printHelp();
-        return std::make_tuple(help_flag, path_value, recursive_flag, force_flag);
+        return std::make_tuple(help_flag, path_value, output_value, recursive_flag, force_flag);
     }
 
     // Pfad angeben
@@ -26,7 +27,7 @@ std::tuple<bool, std::string, bool, bool> View::getInput(int argc, char* argv[])
         path_value = args["-p"];
         if (path_value.empty()) {
             printHelp();
-            return std::make_tuple(help_flag, path_value, recursive_flag, force_flag);
+            return std::make_tuple(help_flag, path_value, output_value, recursive_flag, force_flag);
         }
         else{
             if (std::regex_match (path_value, path_regex_template)) {
@@ -34,15 +35,39 @@ std::tuple<bool, std::string, bool, bool> View::getInput(int argc, char* argv[])
             }
             else {
                 printHelp();
-                std::cerr << "Bitte Pfad angeben!" << std::endl;
-                return std::make_tuple(help_flag, path_value, recursive_flag, force_flag);
+                std::cerr << "Bitte Input Pfad angeben!" << std::endl;
+                return std::make_tuple(help_flag, path_value, output_value, recursive_flag, force_flag);
             }
         }
     }
     else {
         printHelp();
-        std::cerr << "Bitte Pfad angeben!" << std::endl;
-        return std::make_tuple(help_flag, path_value, recursive_flag, force_flag);
+        std::cerr << "Bitte Input Pfad angeben!" << std::endl;
+        return std::make_tuple(help_flag, path_value, output_value, recursive_flag, force_flag);
+    }
+
+    // Output Pfad angeben
+    if (args.find("-o") != args.end()) {
+        output_value = args["-o"];
+        if (output_value.empty()) {
+            printHelp();
+            return std::make_tuple(help_flag, path_value, output_value, recursive_flag, force_flag);
+        }
+        else{
+            if (std::regex_match (output_value, path_regex_template)) {
+                help_flag = false;
+            }
+            else {
+                printHelp();
+                std::cerr << "Bitte Output Pfad angeben!" << std::endl;
+                return std::make_tuple(help_flag, path_value, output_value, recursive_flag, force_flag);
+            }
+        }
+    }
+    else {
+        printHelp();
+        std::cerr << "Bitte Output Pfad angeben!" << std::endl;
+        return std::make_tuple(help_flag, path_value, output_value, recursive_flag, force_flag);
     }
 
     // Rekuriv oder nicht
@@ -55,7 +80,7 @@ std::tuple<bool, std::string, bool, bool> View::getInput(int argc, char* argv[])
         force_flag = true;
     }
 
-    return std::make_tuple(help_flag, path_value, recursive_flag, force_flag);
+    return std::make_tuple(help_flag, path_value, output_value, recursive_flag, force_flag);
 }
 
 // Methode zum Speichern der Commandline Argumente in einer Map
@@ -76,10 +101,12 @@ std::map<std::string, std::string> View::extractArguments(int argc, char* argv[]
 }
 
 void View::printHelp() {
-    std::cout << "Usage: ./filey -p path [options]...\n"
+    std::cout << "Usage: ./filey -p path -o path [options]...\n"
                  "Filey file integrity checker\n"
                  "\t-p path\n"
                  "\t\tPath to file or directory to check integrity\n"
+                 "\t-o path\n"
+                 "\t\tPath to output\n"
                  "\t-r\n"
                  "\t\tSet if the file structure is to be traversed recursively\n"
                  "\t-f\n"
