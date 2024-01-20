@@ -70,3 +70,10 @@ Now you can use the integrity checker:
 
 Attention if you want to use it outside the folder, please change the path for the logs.
 You can do this by changing the path in Filey/src/main.cpp and build it again.
+
+Example usage:
+```bash
+./Filey -p ../files/ -o ../hashes/
+```
+
+This will hash the two text files in the folder. If you change the content, an alert will be sent.
